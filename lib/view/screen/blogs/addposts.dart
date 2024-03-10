@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:smart_training/controller/addposts_controller.dart';
 import 'package:smart_training/core/constant/appcolor.dart';
 import 'package:smart_training/core/constant/appimageassets.dart';
@@ -38,12 +39,12 @@ class AddPosts extends StatelessWidget {
           style: Theme.of(Get.context!).textTheme.titleLarge!,
         ),
         actions: [
-          GetX<AddPostsController>(
-            builder: (controller) => controller.isLoading.value
+          GetBuilder<AddPostsController>(
+            builder: (controller) => controller.isLoading
                 ? const CircularProgressIndicator()
                 : IconButton(
-                    onPressed: controller.title.value.text.trim().isEmpty ||
-                            controller.description.value.text.trim().isEmpty
+                    onPressed: controller.title.trim().isEmpty ||
+                            controller.description.trim().isEmpty
                         ? null
                         : () {
                             controller.addPosts();
@@ -57,20 +58,10 @@ class AddPosts extends StatelessWidget {
         child: ListView(
           shrinkWrap: true,
           children: [
-            GetX<AddPostsController>(
-              builder: (controller) => Column(
-                children: [
-                  AddTitleField(
-                    textEditingController: controller.title.value,
-                  ),
-                  const Divider(thickness: 2.0, color: Colors.grey),
-                  SingleChildScrollView(
-                    child: AddDescriptionField(
-                      textEditingController: controller.description.value,
-                    ),
-                  ),
-                ],
-              ),
+            const AddTitleField(),
+            const Divider(thickness: 2.0, color: Colors.grey),
+            const SingleChildScrollView(
+              child: AddDescriptionField(),
             ),
             GetBuilder<AddPostsController>(
               builder: (controller) => controller.file == null

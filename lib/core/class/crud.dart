@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:smart_training/core/class/statusrequest.dart';
 import 'package:smart_training/core/functions/checkinternet.dart';
 
@@ -20,28 +17,6 @@ class Crud {
       } else {
         return const Left(StatusRequest.offlineFailure);
       }
-    } catch (_) {
-      return const Left(StatusRequest.serverException);
-    }
-  }
-
-  // Ajouter des données avec une image
-  Future<Either<StatusRequest, Map<String, dynamic>>> addDataWithImage(
-      String collection, Map<String, dynamic> data, File? image) async {
-    try {
-      DocumentReference<Map<String, dynamic>> documentReference =
-          await _firebaseFirestore.collection(collection).add(data);
-
-      if (image != null) {
-        String imagePath = 'images/${documentReference.id}.jpg';
-        await _uploadImage(image, imagePath);
-        String imageUrl = await _getImageUrl(imagePath);
-        Map<String, dynamic> updatedData = {'image_url': imageUrl};
-        await documentReference.update(updatedData);
-        return Right({...data, ...updatedData});
-      }
-
-      return Right(data);
     } catch (_) {
       return const Left(StatusRequest.serverException);
     }
@@ -114,70 +89,5 @@ class Crud {
     } catch (_) {
       return const Left(StatusRequest.serverException);
     }
-  }
-
-  // Modifier les données sans modifier l'image
-  Future<Either<StatusRequest, Map<String, dynamic>>> updateData(
-      String collection, String documentId, Map<String, dynamic> data) async {
-    try {
-      await _firebaseFirestore
-          .collection(collection)
-          .doc(documentId)
-          .update(data);
-      return Right(data);
-    } catch (_) {
-      return const Left(StatusRequest.serverException);
-    }
-  }
-
-  // Modifier des données avec image
-  Future<Either<StatusRequest, Map<String, dynamic>>> updateDataWithImage(
-      String collection,
-      String documentId,
-      Map<String, dynamic> data,
-      File? image) async {
-    try {
-      await _firebaseFirestore
-          .collection(collection)
-          .doc(documentId)
-          .update(data);
-
-      if (image != null) {
-        String imagePath = 'images/$documentId.jpg';
-        await _uploadImage(image, imagePath);
-        String imageUrl = await _getImageUrl(imagePath);
-        Map<String, dynamic> updatedData = {'image_url': imageUrl};
-        await _firebaseFirestore
-            .collection(collection)
-            .doc(documentId)
-            .update(updatedData);
-        return Right({...data, ...updatedData});
-      }
-
-      return Right(data);
-    } catch (_) {
-      return const Left(StatusRequest.serverException);
-    }
-  }
-
-  // Supprimer les données
-  Future<Either<StatusRequest, bool>> deleteData(
-      String collection, String documentId) async {
-    try {
-      await _firebaseFirestore.collection(collection).doc(documentId).delete();
-      return const Right(true);
-    } catch (_) {
-      return const Left(StatusRequest.serverException);
-    }
-  }
-
-  // Méthode pour télécharger une image dans le stockage Firebase
-  Future<void> _uploadImage(File image, String imagePath) async {
-    await FirebaseStorage.instance.ref().child(imagePath).putFile(image);
-  }
-
-  // Méthode pour obtenir l'URL d'une image depuis le stockage Firebase
-  Future<String> _getImageUrl(String imagePath) async {
-    return await FirebaseStorage.instance.ref(imagePath).getDownloadURL();
   }
 }

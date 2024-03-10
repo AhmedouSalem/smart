@@ -53,14 +53,16 @@ class PostsController extends GetxController {
     if (duration.inSeconds < 60) {
       return 'à l\'instant';
     } else if (duration.inMinutes < 60) {
-      return '${duration.inMinutes} min';
+      return '${duration.inMinutes} ${_pluralize(duration.inMinutes, "minute")}';
     } else if (duration.inHours < 24) {
-      return '${duration.inHours} h';
-    } else if (duration.inDays < 7) {
-      return '${duration.inDays} j';
+      return '${duration.inHours} ${_pluralize(duration.inHours, "heure")}';
     } else {
       return formatter.format(dateTime);
     }
+  }
+
+  String _pluralize(int count, String unit) {
+    return count > 1 ? '$unit' + 's' : unit;
   }
 
   goToPostsDetails(PostsModel postsModel) {

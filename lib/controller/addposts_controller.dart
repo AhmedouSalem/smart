@@ -17,9 +17,9 @@ import 'package:smart_training/core/services/appservices.dart';
 import 'package:smart_training/data/datasource/remote/posts_data.dart';
 
 class AddPostsController extends GetxController {
-  late Rx<TextEditingController> title;
-  late Rx<TextEditingController> description;
-  RxBool isLoading = false.obs;
+  String title = "";
+  String description = "";
+  bool isLoading = false;
   PostsData postsData = PostsData(Get.find<Crud>());
   AppServices appServices = Get.find();
   StatusRequest statusRequest = StatusRequest.none;
@@ -28,11 +28,15 @@ class AddPostsController extends GetxController {
   File? file;
   String? imageUrl;
   Reference? ref;
-  @override
-  void onInit() {
-    title = TextEditingController().obs;
-    description = TextEditingController().obs;
-    super.onInit();
+
+  onChangeTitle(String value) {
+    title = value.trim();
+    update();
+  }
+
+  onChangeDescription(String value) {
+    description = value.trim();
+    update();
   }
 
   shooseImage(Widget widget) async {
@@ -46,6 +50,7 @@ class AddPostsController extends GetxController {
         await imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       file = File(pickedImage.path);
+      update();
       var rand = Random().nextInt(1000000);
       String nameImage = "$rand${basename(pickedImage.path)}";
       ref = FirebaseStorage.instance.ref("images").child(nameImage);
@@ -60,6 +65,7 @@ class AddPostsController extends GetxController {
         await imagePicker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
       file = File(pickedImage.path);
+      update();
       var rand = Random().nextInt(1000000);
       String nameImage = "$rand${basename(pickedImage.path)}";
       ref = FirebaseStorage.instance.ref("images").child(nameImage);
@@ -69,11 +75,12 @@ class AddPostsController extends GetxController {
 
   addPosts() async {
     if (file == null) {
-      isLoading.value = true;
+      isLoading = true;
+      update();
       var posts = await postsData.addPosts(
         FirebaseAuth.instance.currentUser!.uid,
-        title.value.text.trim(),
-        description.value.text.trim(),
+        title.trim(),
+        description.trim(),
         "",
       );
       statusRequest = await handlingData(posts);
@@ -81,18 +88,20 @@ class AddPostsController extends GetxController {
       if (StatusRequest.success == statusRequest) {
         Get.offAllNamed(AppRoute.posts);
       } else {
-        isLoading.value = false;
+        isLoading = false;
+        update();
         rawSnackBar("Operation failed");
       }
     } else {
-      isLoading.value = true;
+      isLoading = true;
+      update();
       await ref?.putFile(file!);
       imageUrl = await ref!.getDownloadURL();
       if (imageUrl != null) {
         var posts = await postsData.addPosts(
           FirebaseAuth.instance.currentUser!.uid,
-          title.value.text.trim(),
-          description.value.text.trim(),
+          title.trim(),
+          description.trim(),
           imageUrl!,
         );
         statusRequest = await handlingData(posts);
@@ -101,11 +110,13 @@ class AddPostsController extends GetxController {
           Get.offAllNamed(AppRoute.posts);
         } else {
           await FirebaseStorage.instance.refFromURL(imageUrl!).delete();
-          isLoading.value = false;
+          isLoading = false;
+          update();
           rawSnackBar("Failed send data to firestore");
         }
       } else {
-        isLoading.value = false;
+        isLoading = false;
+        update();
         rawSnackBar("Failed send data to cloud storage");
       }
     }

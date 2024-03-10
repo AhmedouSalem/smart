@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:smart_training/controller/posts_details_controller.dart';
 import 'package:smart_training/core/constant/Appsize.dart';
 import 'package:smart_training/core/constant/appcolor.dart';
@@ -27,8 +29,14 @@ class PostsDetails extends StatelessWidget {
                     tag: "${postsDetailsController.postsModel.postID}",
                     child:
                         postsDetailsController.postsModel.postsImage!.isNotEmpty
-                            ? Image.network(
-                                "${postsDetailsController.postsModel.postsImage}",
+                            ? CachedNetworkImage(
+                                imageUrl:
+                                    "${postsDetailsController.postsModel.postsImage}",
+                                placeholder: (context, url) => Lottie.asset(
+                                  AppImageAssets.loading,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                                 fit: BoxFit.contain,
                                 width: double.infinity,
                                 height: AppSize.fullWidth / 1.2,
