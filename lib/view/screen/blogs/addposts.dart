@@ -27,7 +27,7 @@ class AddPosts extends StatelessWidget {
           },
         ),
       ),
-      backgroundColor: const Color.fromARGB(255, 246, 206, 206),
+      backgroundColor: AppColor.scaffoldColor,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {},
@@ -66,7 +66,7 @@ class AddPosts extends StatelessWidget {
             GetBuilder<AddPostsController>(
               builder: (controller) => controller.file == null
                   ? Image.asset(
-                      AppImageAssets.myImage,
+                      AppImageAssets.gallery,
                       width: double.infinity,
                     )
                   : Image.file(controller.file!),
