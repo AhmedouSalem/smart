@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643916253041",
+    "project_id": "smart-training-13143",
+    "storage_bucket": "smart-training-13143.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643916253041:android:7c7a21ea058ecffda398d0",
+        "android_client_info": {
+          "package_name": "com.example.smart_training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmmzh28xnR-tMEx8yrsYzL15a5gKt6uyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
