@@ -30,7 +30,9 @@ class AddPosts extends StatelessWidget {
       backgroundColor: AppColor.scaffoldColor,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back;
+          },
           icon: const Icon(Icons.close),
         ),
         centerTitle: true,
